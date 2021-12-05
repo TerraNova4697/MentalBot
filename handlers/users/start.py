@@ -1,6 +1,7 @@
 from aiogram import types
 from aiogram.dispatcher.filters.builtin import CommandStart
 
+from data import variables
 from keyboards.inline.worker.i_am_worker_button import i_am_worker_button
 from loader import dp
 

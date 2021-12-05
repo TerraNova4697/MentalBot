@@ -41,6 +41,24 @@ class Database:
         """
         self.execute(sql, commit=True)
 
+    def create_table_answers(self):
+        sql = """
+        CREATE TABLE Answers (
+            answers_id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id int NOT NULL,
+            mood int NOT NULL,
+            tired int NOT NULL,
+            energy int NOT NULL,
+            productivity int NOT NULL,
+            one_hour varchar NOT NULL,
+            colleagues int NOT NULL,
+            date varchar NOT NULL,
+            month int NOT NULL,
+            year int NOT NULL
+            );
+        """
+        self.execute(sql, commit=True)
+
     # STRINGS FORMATTING
     @staticmethod
     def format_args(sql, parameters: dict):
@@ -58,6 +76,15 @@ class Database:
         sql = "SELECT user_id FROM Workers WHERE "
         sql, parameters = self.format_args(sql, kwargs)
         return self.execute(sql, parameters=parameters, fetchall=True)
+
+    # Answers table operations
+    def add_answer(self, user_id, mood, tired, energy, productivity, one_hour, colleagues, date, month, year):
+        sql = """
+        INSERT INTO Answers(user_id, mood, tired, energy, productivity, one_hour, colleagues, date, month, year) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        """
+        self.execute(sql,
+                     parameters=(user_id, mood, tired, energy, productivity, one_hour, colleagues, date, month, year),
+                     commit=True)
 
 
 def logger(statement):
