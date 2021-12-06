@@ -14,6 +14,7 @@ from states.register_worker import RegisterWorker
 # Получаем апдейт от сотрудника. Проверяем есть ли он в базе. Если отрицательно, то регистрируем:
 @dp.callback_query_handler(i_am_worker_button_callback.filter(action="to_worker_branch"))
 async def init_worker(call: CallbackQuery):
+    await call.answer()
     await bot.send_message(chat_id=call.message.chat.id, text="Введите Вашу фамилию")
     await RegisterWorker.InputName.set()
 
