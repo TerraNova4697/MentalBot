@@ -1,4 +1,8 @@
 
+owner = ['471239014']
+
+managers = list()
+
 workers = list()
 
 # Ссылки на медитацию

@@ -59,11 +59,24 @@ class Database:
         """
         self.execute(sql, commit=True)
 
+    def create_table_managers(self):
+        sql = """
+        CREATE TABLE Managers (
+            user_id int NOT NULL,
+            name varchar(255) NOT NULL,
+            surname varchar(255) NOT NULL,
+            patronym varchar(255) NOT NULL,
+            status varchar NOT NULL,
+            PRIMARY KEY (user_id)
+            );
+        """
+        self.execute(sql, commit=True)
+
     # STRINGS FORMATTING
     @staticmethod
     def format_args(sql, parameters: dict):
         sql += " AND ".join([
-            f"{item} = ?" for item in parameters
+            f"{item}=?" for item in parameters
         ])
         return sql, tuple(parameters.values())
 
@@ -86,6 +99,27 @@ class Database:
                      parameters=(user_id, mood, tired, energy, productivity, one_hour, colleagues, date, month, year),
                      commit=True)
 
+    # Managers table operations
+    def select_all_managers_user_id(self, **kwargs):
+        sql = "SELECT user_id FROM Managers WHERE "
+        sql, parameters = self.format_args(sql, kwargs)
+        return self.execute(sql, parameters=parameters, fetchall=True)
+
+    def add_manager(self, user_id: int, name: str, surname: str, patronym: str, status: str = "NotActive"):
+        sql = "INSERT INTO Managers(user_id, name, surname, patronym, status) VALUES(?, ?, ?, ?, ?)"
+        self.execute(sql, parameters=(user_id, name, surname, patronym, status), commit=True)
+
+    def select_manager_by_user_id(self, **kwargs):
+        sql = "SELECT name, surname, patronym FROM Managers WHERE "
+        sql, parameters = self.format_args(sql, kwargs)
+        return self.execute(sql, parameters=parameters, fetchone=True)
+
+    def update_manager(self, user_id: int, status: str):
+        sql = f"""
+                UPDATE Managers SET status=? WHERE user_id=?
+                """
+        return self.execute(sql, parameters=(status, user_id), commit=True)
+
 
 def logger(statement):
     print(f"""
@@ -94,4 +128,3 @@ Executing:
 {statement}
 _____________________________________________________
 """)
-
