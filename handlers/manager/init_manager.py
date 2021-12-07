@@ -3,19 +3,25 @@ from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters import Command
 
 from filters import IsNotOwner
+from keyboards.default.manager_main_keyboard import manager_main_menu_keyboard
 from keyboards.inline.owner.confirm_keyboard import create_keyboard_to_confirm
 from loader import dp, bot, db
 from states.register_manager import RegisterManager
-from data.variables import owner
+from data.variables import owner, managers
 
 notify_owner_text = "Сотрудник ______(ФИО) отправил запрос на права менеджера."
 notified_text = "Мы отправили ваш запрос на права менеджера. Пожалуйста, дождитесь подтверждения."
+notify_admin_added = "Приветствую менеджера! Вы можете выбрать следующие функции:"
 
 
 @dp.message_handler(Command('admin'), IsNotOwner())
 async def init_manager(message: types.Message):
-    await bot.send_message(chat_id=message.chat.id, text="Введите свою фамилию")
-    await RegisterManager.InputName.set()
+    if int(message.chat.id) in managers:
+        await bot.send_message(chat_id=message.chat.id,
+                               text=notify_admin_added, reply_markup=manager_main_menu_keyboard)
+    else:
+        await bot.send_message(chat_id=message.chat.id, text="Введите свою фамилию")
+        await RegisterManager.InputName.set()
 
 
 @dp.message_handler(state=RegisterManager.InputName)

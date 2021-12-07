@@ -121,6 +121,11 @@ class Database:
         sql, parameters = self.format_args(sql, kwargs)
         return self.execute(sql, parameters=parameters, fetchall=True)
 
+    def select_all_managers(self, **kwargs):
+        sql = "SELECT * FROM Managers WHERE "
+        sql, parameters = self.format_args(sql, kwargs)
+        return self.execute(sql, parameters=parameters, fetchall=True)
+
     def add_manager(self, user_id: int, name: str, surname: str, patronym: str, status: str = "NotActive"):
         sql = "INSERT INTO Managers(user_id, name, surname, patronym, status) VALUES(?, ?, ?, ?, ?)"
         self.execute(sql, parameters=(user_id, name, surname, patronym, status), commit=True)
@@ -131,6 +136,12 @@ class Database:
         return self.execute(sql, parameters=parameters, fetchone=True)
 
     def update_manager(self, user_id: int, status: str):
+        sql = f"""
+                UPDATE Managers SET status=? WHERE user_id=?
+                """
+        return self.execute(sql, parameters=(status, user_id), commit=True)
+
+    def inactivate_manager(self, user_id: int, status: str = "Inactive"):
         sql = f"""
                 UPDATE Managers SET status=? WHERE user_id=?
                 """

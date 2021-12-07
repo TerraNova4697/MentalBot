@@ -17,7 +17,7 @@ def create_keyboard_of_workers(list_of_workers):
     for worker in list_of_workers:
         keyboard.add(InlineKeyboardButton(text=f"{worker[1]} {worker[2]}", callback_data=delete_worker_callback
                                           .new(action="delete", user_id=worker[0])))
-    keyboard.add(InlineKeyboardButton(text="Отмена", callback_data=cancel_button_choose_worker_to_delete
+    keyboard.add(InlineKeyboardButton(text="Отменить", callback_data=cancel_button_choose_worker_to_delete
                                       .new(action="cancel")))
     return keyboard
 
