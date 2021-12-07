@@ -9,10 +9,5 @@ i_am_worker_button = InlineKeyboardMarkup(row_width=1,
                                                   InlineKeyboardButton(text="Я сотрудник",
                                                                        callback_data=i_am_worker_button_callback
                                                                        .new(action="to_worker_branch"))
-                                              ],
-                                              [
-                                                  InlineKeyboardButton(text="Я менеджер",
-                                                                       callback_data=i_am_worker_button_callback
-                                                                       .new(action="to_manage_branch"))
                                               ]
                                           ])
