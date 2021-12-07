@@ -85,10 +85,26 @@ class Database:
         sql = "INSERT INTO Workers(user_id, name, surname, patronym, status) VALUES(?, ?, ?, ?, ?)"
         self.execute(sql, parameters=(user_id, name, surname, patronym, status), commit=True)
 
+    def select_worker_by_id(self, **kwargs):
+        sql = "SELECT * FROM Workers WHERE "
+        sql, parameters = self.format_args(sql, kwargs)
+        return self.execute(sql, parameters=parameters, fetchall=True)
+
     def select_all_workers_user_id(self, **kwargs):
         sql = "SELECT user_id FROM Workers WHERE "
         sql, parameters = self.format_args(sql, kwargs)
         return self.execute(sql, parameters=parameters, fetchall=True)
+
+    def select_all_workers_by_name(self, **kwargs):
+        sql = "SELECT * FROM Workers WHERE "
+        sql, parameters = self.format_args(sql, kwargs)
+        return self.execute(sql, parameters=parameters, fetchall=True)
+
+    def inactivate_worker(self, user_id: int, status: str = "Inactive"):
+        sql = f"""
+                UPDATE Workers SET status=? WHERE user_id=?
+                """
+        return self.execute(sql, parameters=(status, user_id), commit=True)
 
     # Answers table operations
     def add_answer(self, user_id, mood, tired, energy, productivity, one_hour, colleagues, date, month, year):

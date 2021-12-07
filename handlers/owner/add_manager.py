@@ -3,8 +3,9 @@ from aiogram.types import CallbackQuery
 
 from filters import IsOwner, IsOwnerCall
 from keyboards.default.manager_main_keyboard import manager_main_menu_keyboard
-from keyboards.inline.owner.owner_callbackdatas import confirm_new_manager_callback
+from keyboards.inline.owner.owner_callbackdatas import confirm_new_manager_callback, decline_new_manager_callback
 from loader import dp, bot, db
+from data.variables import managers
 
 text = "Сообщите менеджеру скрытую команду /admin, которую нужно ввести в бот, для активации возможностей менеджера. " \
        "Вам придет уведомление о подтверждении с данными аккаунта менеджера. Подтвердите или отклоните."
@@ -19,15 +20,23 @@ async def add_manager(message: types.Message):
 
 @dp.callback_query_handler(confirm_new_manager_callback.filter(action="confirm"), IsOwnerCall())
 async def confirm_manager(call: CallbackQuery, callback_data: dict):
-    print(call.message.text)
     await bot.delete_message(chat_id=call.message.chat.id, message_id=call.message.message_id)
     manager_id = callback_data.get("user_id")
     manager = db.select_manager_by_user_id(user_id=int(manager_id))
-    print(manager)
     db.update_manager(user_id=int(manager_id), status="Active")
     await bot.send_message(chat_id=call.message.chat.id,
                            text=f"Пользователь {manager[0]} {manager[1]} {manager[2]}"
                            f" принят в качестве менеджера и имеет доступ к статистике")
+    managers.append(int(manager_id))
     await bot.send_message(chat_id=manager_id, text=notify_admin_added, reply_markup=manager_main_menu_keyboard)
 
 
+@dp.callback_query_handler(decline_new_manager_callback.filter(action="decline"), IsOwnerCall())
+async def decline_manager(call: CallbackQuery, callback_data: dict):
+    await bot.delete_message(chat_id=call.message.chat.id, message_id=call.message.message_id)
+    manager_id = callback_data.get("user_id")
+    manager = db.select_manager_by_user_id(user_id=int(manager_id))
+    await bot.send_message(chat_id=call.message.chat.id,
+                           text=f"Пользователь {manager[0]} {manager[1]} {manager[2]}"
+                                f" не является менеджером, не имеет доступ к статистике")
+    await bot.send_message(chat_id=manager_id, text="Доступ отклонен", reply_markup=manager_main_menu_keyboard)

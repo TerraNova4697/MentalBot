@@ -48,7 +48,7 @@ async def workers_name(message: types.Message, state: FSMContext):
     name = data.get("name")
     patronym = message.text
     await state.finish()
-    variables.workers.append(message.chat.id)
+    variables.workers.append(int(message.chat.id))
     db.add_worker(message.chat.id, name=name, surname=surname, patronym=patronym)
     await bot.send_message(chat_id=message.chat.id, text="Вы можете выбрать следующее:",
                            reply_markup=workers_main_keyboard)

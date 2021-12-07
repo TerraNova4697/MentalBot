@@ -6,6 +6,7 @@ from loader import dp
 from .uninitialized_worker import IsWorkerInitialized
 from .is_owner import IsOwner, IsOwnerCall
 from .is_not_owner import IsNotOwner
+from .is_manager import IsManager, IsManagerCall
 
 
 if __name__ == "filters":
@@ -13,4 +14,5 @@ if __name__ == "filters":
     dp.filters_factory.bind(IsOwner)
     dp.filters_factory.bind(IsOwnerCall)
     dp.filters_factory.bind(IsNotOwner)
+    dp.filters_factory.bind(IsManager)
     pass
