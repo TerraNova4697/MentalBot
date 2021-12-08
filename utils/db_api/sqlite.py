@@ -115,6 +115,11 @@ class Database:
                      parameters=(user_id, mood, tired, energy, productivity, one_hour, colleagues, date, month, year),
                      commit=True)
 
+    def select_all_answers_by_user_id(self, **kwargs):
+        sql = "SELECT * FROM Answers WHERE "
+        sql, parameters = self.format_args(sql, kwargs)
+        return self.execute(sql, parameters=parameters, fetchall=True)
+
     # Managers table operations
     def select_all_managers_user_id(self, **kwargs):
         sql = "SELECT user_id FROM Managers WHERE "
