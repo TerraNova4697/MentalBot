@@ -45,9 +45,14 @@ async def notify_owner(message: types.Message, state: FSMContext):
     surname = data.get("surname")
     patronym = message.text
     print(message.chat.id)
-    db.add_manager(user_id=message.chat.id, name=name, surname=surname, patronym=patronym)
-    await bot.send_message(chat_id=owner[0],
-                           text=f"Сотрудник {name} {surname} {patronym} отправил запрос на права менеджера.",
-                           reply_markup=create_keyboard_to_confirm(user_id=message.chat.id))
-    await bot.send_message(chat_id=message.chat.id, text=notified_text)
-    await state.finish()
+    try:
+        db.add_manager(user_id=message.chat.id, name=name, surname=surname, patronym=patronym)
+        await bot.send_message(chat_id=owner[0],
+                               text=f"Сотрудник {name} {surname} {patronym} отправил запрос на права менеджера.",
+                               reply_markup=create_keyboard_to_confirm(user_id=message.chat.id))
+        await bot.send_message(chat_id=message.chat.id, text=notified_text)
+    except Exception as err:
+        print(err)
+        await bot.send_message(chat_id=message.chat.id, text="Доступ отклонен")
+    finally:
+        await state.finish()
