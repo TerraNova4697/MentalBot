@@ -11,4 +11,5 @@ choose_worker_for_answers_id = CallbackData("choose", "action", "user_id")
 choose_month_callback = CallbackData("chosen_m", "action", "month", "year", "user_id")
 
 choose_test_callback = CallbackData("chosen_d", "action", "answers_id")
+update_email_callback = CallbackData("update", "action")
 

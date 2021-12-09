@@ -54,7 +54,8 @@ class Database:
             colleagues int NOT NULL,
             date varchar NOT NULL,
             month int NOT NULL,
-            year int NOT NULL
+            year int NOT NULL,
+            average varchar
             );
         """
         self.execute(sql, commit=True)
@@ -67,6 +68,7 @@ class Database:
             surname varchar(255) NOT NULL,
             patronym varchar(255) NOT NULL,
             status varchar NOT NULL,
+            email varchar,
             PRIMARY KEY (user_id)
             );
         """
@@ -107,12 +109,12 @@ class Database:
         return self.execute(sql, parameters=(status, user_id), commit=True)
 
     # Answers table operations
-    def add_answer(self, user_id, mood, tired, energy, productivity, one_hour, colleagues, date, month, year):
+    def add_answer(self, user_id, mood, tired, energy, productivity, one_hour, colleagues, average, date, month, year):
         sql = """
-        INSERT INTO Answers(user_id, mood, tired, energy, productivity, one_hour, colleagues, date, month, year) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        INSERT INTO Answers(user_id, mood, tired, energy, productivity, one_hour, colleagues, date, month, year, average) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """
         self.execute(sql,
-                     parameters=(user_id, mood, tired, energy, productivity, one_hour, colleagues, date, month, year),
+                     parameters=(user_id, mood, tired, energy, productivity, one_hour, colleagues, date, month, year, average),
                      commit=True)
 
     def select_all_answers_by_user_id(self, **kwargs):
@@ -122,7 +124,7 @@ class Database:
 
     # Managers table operations
     def select_all_managers_user_id(self, **kwargs):
-        sql = "SELECT user_id FROM Managers WHERE "
+        sql = "SELECT user_id, email FROM Managers WHERE "
         sql, parameters = self.format_args(sql, kwargs)
         return self.execute(sql, parameters=parameters, fetchall=True)
 
@@ -131,9 +133,9 @@ class Database:
         sql, parameters = self.format_args(sql, kwargs)
         return self.execute(sql, parameters=parameters, fetchall=True)
 
-    def add_manager(self, user_id: int, name: str, surname: str, patronym: str, status: str = "NotActive"):
-        sql = "INSERT INTO Managers(user_id, name, surname, patronym, status) VALUES(?, ?, ?, ?, ?)"
-        self.execute(sql, parameters=(user_id, name, surname, patronym, status), commit=True)
+    def add_manager(self, user_id: int, name: str, surname: str, patronym: str, status: str = "NotActive", email: str = ''):
+        sql = "INSERT INTO Managers(user_id, name, surname, patronym, status, email) VALUES(?, ?, ?, ?, ?, ?)"
+        self.execute(sql, parameters=(user_id, name, surname, patronym, status, email), commit=True)
 
     def select_manager_by_user_id(self, **kwargs):
         sql = "SELECT name, surname, patronym FROM Managers WHERE "
@@ -145,6 +147,10 @@ class Database:
                 UPDATE Managers SET status=? WHERE user_id=?
                 """
         return self.execute(sql, parameters=(status, user_id), commit=True)
+
+    def update_managers_email(self, email, user_id):
+        sql = "UPDATE Managers SET email=? WHERE user_id=?"
+        return self.execute(sql, parameters=(email, user_id), commit=True)
 
     def inactivate_manager(self, user_id: int, status: str = "Inactive"):
         sql = f"""

@@ -4,7 +4,7 @@ from loader import dp, db
 import middlewares, filters, handlers
 from utils.notify_admins import on_startup_notify
 from utils.set_bot_commands import set_default_commands
-from data.variables import workers, managers
+from data.variables import workers, managers, accessed_emails
 
 
 async def on_startup(dispatcher):
@@ -34,7 +34,8 @@ async def on_startup(dispatcher):
     list_of_managers = db.select_all_managers_user_id(status="Active")
     for user_id in list_of_managers:
         managers.append(user_id[0])
-
+        if len(user_id[1]) > 0:
+            accessed_emails.append(user_id[0])
     # Уведомляет про запуск
     await on_startup_notify(dispatcher)
 

@@ -2,12 +2,19 @@ from aiogram import types
 from aiogram.dispatcher import FSMContext
 from aiogram.types import CallbackQuery
 
+from keyboards.inline.manager.choose_month_keyboard import calculate_points
 from keyboards.inline.worker.test import q1, q2, q3, q4, q6
 from keyboards.inline.worker.worker_callback_data import q1_callback, q2_callback, q3_callback, q4_callback, \
     q5_callback, q6_callback
 from loader import dp, bot, db
 from states.test import Test
 from datetime import date
+
+from utils.google_sheets import update_statistics
+
+
+def calculate_average(a, b, c, d, e):
+    return str((a+b+c+d+e)/5)
 
 
 def check_status(a, b, c, d, e):
@@ -127,13 +134,16 @@ async def finish_test(call: CallbackQuery, callback_data: dict, state: FSMContex
     productivity = data.get("productivity")
     one_hour = data.get("one_hour")
     await bot.delete_message(chat_id=call.message.chat.id, message_id=call.message.message_id)
-    result = check_status(mood, tired, energy, productivity, colleagues)
+    result = check_status(float(mood), float(tired), float(energy), float(productivity), float(colleagues))
+    avr: str = calculate_points(mood, tired, energy, productivity, colleagues)
     await bot.send_message(chat_id=call.message.chat.id, text=result)
     await state.finish()
     curr_date = date.today()
     month = curr_date.month
     year = curr_date.year
-    print(type(month))
+    print(avr)
     print(type(year))
     db.add_answer(user_id=call.message.chat.id, mood=mood, tired=tired, energy=energy, productivity=productivity,
-                  one_hour=one_hour, colleagues=colleagues, date=str(curr_date), month=month, year=year)
+                  one_hour=one_hour, colleagues=colleagues, average=avr, date=str(curr_date), month=month, year=year)
+    answers = db.select_all_answers_by_user_id(month=int(month), year=int(year))
+    update_statistics(answers, month, year)

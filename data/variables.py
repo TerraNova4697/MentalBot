@@ -1,9 +1,11 @@
 
-owner = ['471239014']
+owner = ['818111847']
 
 managers = list()
 
 workers = list()
+
+accessed_emails = ['471239014']
 
 # Ссылки на медитацию
 meditation = ['https://www.youtube.com/watch?v=Ho91a_GwYxs',
